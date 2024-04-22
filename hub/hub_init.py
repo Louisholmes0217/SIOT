@@ -56,7 +56,7 @@ def settings_config():
     
     # Creating nodes list
     with open("/opt/SIOT/hub/nodes.csv", "w") as f:
-        f.write("id,ip,name,port,desc,tag\n")
+        f.write("id,ip,name,desc,tag\n")
 
 def test_startup():
     with open("/opt/SIOT/hub/hub_settings.csv", "r") as f:
