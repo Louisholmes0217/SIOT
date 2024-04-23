@@ -9,6 +9,8 @@ def make_dirs():
     except FileExistsError:
         print("Files already exist")
 
-make_dirs()
-with open("/opt/SIOT/node/node.csv", "w") as f:
-    f.write("id,ip,name,description\n")
+def init_files():
+    with open("/opt/SIOT/node/node.csv", "w") as f:
+        f.write("tag,command,description\n")
+
+init_files()
