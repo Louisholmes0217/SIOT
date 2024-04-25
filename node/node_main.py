@@ -72,3 +72,4 @@ def run_call(tag):
 for call in get_calls():
     print(call)
 run_call("1")
+start_server()

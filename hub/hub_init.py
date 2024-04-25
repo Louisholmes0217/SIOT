@@ -13,11 +13,18 @@ import threading
 def make_dirs():
     try:
         os.mkdir("/opt/SIOT")
+    except PermissionError:
+        print("Insufficient permissions, cannot create directories \n'run me as root'")
+    except FileExistsError:
+        print("Files already exist")
+
+    try:
         os.mkdir("/opt/SIOT/hub")
     except PermissionError:
         print("Insufficient permissions, cannot create directories \n'run me as root'")
     except FileExistsError:
         print("Files already exist")
+
 
 def settings_config():
     while True:
@@ -58,11 +65,9 @@ def settings_config():
     with open("/opt/SIOT/hub/nodes.csv", "w") as f:
         f.write("id,ip,name,desc\n")
 
-def test_startup():
-    with open("/opt/SIOT/hub/hub_settings.csv", "r") as f:
-        # Reading 
-        reader = csv.reader(f)
-        reader.__next__()
+s = socket.socket((socket.AF_INET, socket.SOCK_STREAM))
+s.connect(("127.0.0.1", 5555))
+s.send()
 
-make_dirs()
-settings_config()
+#make_dirs()
+#settings_config()
