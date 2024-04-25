@@ -2,10 +2,11 @@
 import socket
 import subprocess
 import csv
-
+import pickle
 HEADER_LENGTH = 10
 def main():
     start_server()
+
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 def start_server():
@@ -14,8 +15,21 @@ def start_server():
     while True:
         conn, ip = s.accept()
         print(f"[CONNECTION ESTABLISHED] with host: {ip}")
-        while True:
-            header = s.recv(HEADER_LENGTH)
+        msg_len = conn.recv(4)
+        if len(msg_len) <= 0:
+            continue
+        msg_len = int.from_bytes(msg_len)
+        msg = conn.recv(msg_len)
+        full_msg = pickle.loads(msg)
+        match full_msg[0]:
+            case 1:
+                run_call(full_msg[1])
+            case 2:
+                add_call(full_msg[1], full_msg[2])
+            case 3:
+                delete_calls()
+        
+    """
             header = (header.decode("utf-8")).strip()
             match header:
                 # 1 is add_call()
@@ -39,6 +53,7 @@ def start_server():
                     calls_len = len(calls.encode("utf-8"))
                     conn.send(f"{calls_len:<10}")
                     conn.send(calls.encode("utf-8"))
+    """
 
 def add_call(command, description):
     with open("/opt/SIOT/node/node.csv", "r") as fr:
@@ -69,7 +84,4 @@ def run_call(tag):
             if line["tag"] == tag:
                 subprocess.call(line["command"], shell=True)
 
-for call in get_calls():
-    print(call)
-run_call("1")
 start_server()
