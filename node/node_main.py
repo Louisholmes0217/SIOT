@@ -18,7 +18,7 @@ def start_server():
         msg_len = conn.recv(4)
         if len(msg_len) <= 0:
             continue
-        msg_len = int.from_bytes(msg_len)
+        msg_len = int.from_bytes(msg_len, byteorder="big")
         msg = conn.recv(msg_len)
         full_msg = pickle.loads(msg)
         match full_msg[0]:
@@ -28,32 +28,13 @@ def start_server():
                 add_call(full_msg[1], full_msg[2])
             case 3:
                 delete_calls()
-        
-    """
-            header = (header.decode("utf-8")).strip()
-            match header:
-                # 1 is add_call()
-                case "1":
-                    cmd_len = s.recv(HEADER_LENGTH)
-                    command = s.recv(cmd_len)
-                    desc_len = s.recv(HEADER_LENGTH)
-                    description = s.recv(desc_len)
-                    add_call(command, description)
-
-                # 2 is delete_calls()
-                case "2":
-                    delete_calls()
-                
-                # 3 is get_calls()
-                case "3":
-                    calls = get_calls()
-                    call_string = ("")
-                    for call in calls:
-                        call_string += str(call)
-                    calls_len = len(calls.encode("utf-8"))
-                    conn.send(f"{calls_len:<10}")
-                    conn.send(calls.encode("utf-8"))
-    """
+            case 4:
+                calls = get_calls()
+                calls = pickle.dumps(calls)
+                conn.sendall((len(calls)).to_bytes(4, byteorder="big"))
+                conn.sendall(calls)
+            case 5:
+                delete_call(full_msg[1])
 
 def add_call(command, description):
     with open("/opt/SIOT/node/node.csv", "r") as fr:
@@ -76,6 +57,21 @@ def get_calls():
 def delete_calls():
     with open("/opt/SIOT/node/node.csv", "w") as f:
         f.write("tag,command,description\n")
+
+def delete_call(tag):
+    with open("/opt/SIOT/node/node.csv", "r") as f:
+        new_lines = []
+        for line in f.readlines():
+            if line.split(",")[0] != tag:
+                new_lines.append(line)
+    with open("/opt/SIOT/node/node.csv", "w") as f:
+        counter = 0
+        for line in new_lines:
+            f.write(str(counter)+",")
+            l_line = line.split(",")
+            l_line.pop(0)
+            line = ",".join(l_line)
+            f.write(line)
 
 def run_call(tag):
     with open("/opt/SIOT/node/node.csv", "r") as f:
