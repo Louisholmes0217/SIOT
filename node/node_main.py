@@ -43,16 +43,28 @@ def add_call(command, description):
             if line != "":
                 tag = (line.split(","))[0]
         if tag == "tag":
-            tag = 0
+            tag = "0"
+    print("TAG = ", tag, "OF TYPE", type(tag))
+    tag = int(tag)
+    tag += 1
+    tag = str(tag)
     with open("/opt/SIOT/node/node.csv", "a") as fw:
-        fw.write(f"{int(tag)+1},{command},{description}\n")
+        fw.write(f"{tag},{command},{description}\n")
 
 def get_calls():
-    lines = []
     with open("/opt/SIOT/node/node.csv") as f:
+        new_lines = []
         for line in f.readlines():
-            lines.append(line)
-    return lines
+            new_line = []
+            line = line.split(",")
+            new_line.append(line[0])
+            new_line.append(line[1])
+            line.pop(0)
+            line.pop(0)
+            line = ",".join(line)
+            new_line.append(line)
+            new_lines.append(new_line)
+    return new_lines
 
 def delete_calls():
     with open("/opt/SIOT/node/node.csv", "w") as f:
