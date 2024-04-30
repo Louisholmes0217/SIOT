@@ -47,15 +47,27 @@ def main():
                     match choice:
                         case "1":
                             print("Showing all calls available on the node:")
-                            calls = get_calls(node_socket)
+                            try:
+                                calls = get_calls(node_socket)
+                            except ConnectionRefusedError:
+                                print("Node not available")
+                                break
                             for call in calls:
                                 print(f"{call[0]:10}{call[1]:10}{call[2]}", end="")
                         case "2":
                             print("Deleting all calls in node:")
-                            delete_calls(node_socket)
+                            try:
+                                delete_calls(node_socket)
+                            except ConnectionRefusedError:
+                                print("Node not available")
+                                break
                         case "3":
                             print("Please enter the tag of the call you wish to delete:")
-                            calls = get_calls(node_socket)
+                            try:
+                                calls = get_calls(node_socket)
+                            except ConnectionRefusedError:
+                                print("Node not available")
+                                break
                             for call in calls:
                                 print(f"{call[0]:10}{call[1]:10}{call[2]:10}", end="")
                             deleted_tag = input(":    ")
@@ -66,12 +78,20 @@ def main():
                             command = input(":    ")
                             print(f"Please enter the description for the call")
                             desc = input(":    ")
-                            add_call(node_socket, command, desc)
+                            try:   
+                                add_call(node_socket, command, desc)
+                            except ConnectionRefusedError:
+                                print("Node not available")
+                                break
                             print("Call added")
                         case "5":
                             print("Please enter the tag for the call you wish to run:")
                             print("Showing all calls available on the node:")
-                            calls = get_calls(node_socket)
+                            try:
+                                calls = get_calls(node_socket)
+                            except ConnectionRefusedError:
+                                print("Node not available")
+                                break
                             for call in calls:
                                 print(f"{call[0]:10}{call[1]:10}{call[2]}", end="")
                             tag = input(":    ")

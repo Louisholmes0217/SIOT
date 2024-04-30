@@ -72,18 +72,28 @@ def delete_calls():
 
 def delete_call(tag):
     with open("/opt/SIOT/node/node.csv", "r") as f:
+        if not tag.isnumeric():
+            return None
+            raise Exception("Not a valid tag")
         new_lines = []
         for line in f.readlines():
             if line.split(",")[0] != tag:
                 new_lines.append(line)
+                print(f"Adding line {line}")
     with open("/opt/SIOT/node/node.csv", "w") as f:
         counter = 0
         for line in new_lines:
             f.write(str(counter)+",")
             l_line = line.split(",")
+            if l_line[0] == "tag":
+                line = ",".join(l_line)
+                f.write(line)
+                continue
             l_line.pop(0)
             line = ",".join(l_line)
             f.write(line)
+            counter += 1
+            
 
 def run_call(tag):
     with open("/opt/SIOT/node/node.csv", "r") as f:
